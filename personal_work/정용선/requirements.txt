@@ -1,0 +1,8 @@
+streamlit
+langchain
+tiktoken
+loguru
+transformers
+faiss-cpu
+sentence-transformers
+openai
