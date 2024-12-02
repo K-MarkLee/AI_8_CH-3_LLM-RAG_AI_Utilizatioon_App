@@ -1,19 +1,7 @@
-# 💬 Chatbot template
+mk06 업로드완료
 
-A simple Streamlit app that shows how to build a chatbot using OpenAI's GPT-3.5.
-
-[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://chatbot-template.streamlit.app/)
-
-### How to run it on your own machine
-
-1. Install the requirements
-
-   ```
-   $ pip install -r requirements.txt
-   ```
-
-2. Run the app
-
-   ```
-   $ streamlit run streamlit_app.py
-   ```
+기능
+1. 자유롭게 수정가능한 프롬포트 템플릿
+2. github에서 json파일 불러오기
+3. 벡터데이터 로컬(PC)에 저장하고 불러오기
+4. 어시스턴트 출력메시지 음성으로 출력
