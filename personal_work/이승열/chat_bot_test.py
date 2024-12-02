@@ -26,7 +26,7 @@ if not api_key:
 os.environ["OpenAI_API_KEY"] = api_key
 
 
-model = ChatOpenAI(model ="gpt-4o")
+model = ChatOpenAI(model ="gpt-4o-mini")
 
 
 
@@ -95,8 +95,11 @@ class DebugPassThrough(RunnablePassthrough):
     
 class ContextToText(RunnablePassthrough):
     def invoke(self, inputs, config = None, **kwargs):
+        
+        #마지막 데이터를 넣음으로 업데이트
+        inputs["data"] = inputs["data"][-3:]
         return {"data": inputs["data"], "question": inputs["question"]}
-       
+    
 
     
 # 랭체인 연결
@@ -131,7 +134,14 @@ def save_to_json(file_path, data):
 
 # streamlit의 사용을 위한 호출
 def get_response(user_input):
-    return rag_chain_divide.invoke(user_input)
+    # 히스토리에 사용자 입력 추가
+    chat_history.append({"role": "user", "content" : user_input})
+    
+    
+    #모델의 입력 구성
+    model_input = "\n".join([f"{msg['role']}: {msg['content']}" for msg in chat_history])
+    
+    return rag_chain_divide.invoke(model_input)
 
 
 #####################################################################
@@ -162,6 +172,7 @@ output_file = create_json_file()
     
 #     #모델의 입력 구성
 #     model_input = "\n".join([f"{msg['role']}: {msg['content']}" for msg in chat_history])
+#     print(model_input)
 
 
 #     #응답 생성
@@ -183,3 +194,4 @@ output_file = create_json_file()
 
 #     print("Question : ", query)
 #     print(response.content)
+    
