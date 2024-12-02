@@ -3,6 +3,7 @@ import os
 import faiss
 import json
 import time
+from dotenv import load_dotenv
 
 from langchain_openai import ChatOpenAI
 from langchain_openai import OpenAIEmbeddings
@@ -18,8 +19,10 @@ from collections import deque
 
 ######################################################################
 
+load_dotenv()
+
 # 환경 변수 설정
-api_key = os.getenv("GPT_API")
+api_key = os.getenv("OPENAI_API_KEY")
 
 if not api_key:
     raise EnvironmentError("Error: OpenAI_API_KEY is not set. Please configure it in your environment.")
