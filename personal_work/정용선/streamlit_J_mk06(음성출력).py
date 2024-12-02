@@ -187,7 +187,7 @@ def load_vectorstore_local(file_path):
 
 def get_conversation_chain(vectorstore, openai_api_key, custom_prompt):
     """대화 체인 생성"""
-    llm = ChatOpenAI(openai_api_key=openai_api_key, model_name='gpt-4', temperature=0)
+    llm = ChatOpenAI(openai_api_key=openai_api_key, model_name='gpt-4o-mini', temperature=0)
     
     PROMPT = PromptTemplate(
         template=custom_prompt,
