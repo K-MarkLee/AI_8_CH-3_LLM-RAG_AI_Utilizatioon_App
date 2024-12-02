@@ -19,7 +19,12 @@ from collections import deque
 ######################################################################
 
 # 환경 변수 설정
-os.environ["OpenAI_API_KEY"] = os.getenv("GPT_API")
+api_key = os.getenv("GPT_API")
+
+if not api_key:
+    raise EnvironmentError("Error: OpenAI_API_KEY is not set. Please configure it in your environment.")
+os.environ["OpenAI_API_KEY"] = api_key
+
 
 model = ChatOpenAI(model ="gpt-4o")
 
@@ -37,7 +42,7 @@ embeddings = OpenAIEmbeddings(model = "text-embedding-3-small")
 ######################################################################
 
 # 백터 데이터 베이스 불러오기
-recipes = FAISS.load_local("./food_db." ,embeddings, allow_dangerous_deserialization=True)
+recipes = FAISS.load_local("food_db/" ,embeddings, allow_dangerous_deserialization=True)
 
 
 
@@ -53,68 +58,28 @@ retriever = recipes.as_retriever(search_type="similarity", search_kwargs={"k": 5
 
 #####################################################################
 
-# # 프롬프트 설정
-
-# prompt = ChatPromptTemplate.from_messages([
-#     ("system", "너는 주어진 데이터로만 답변을 할 수 있어."),
-#     ("system", "너는 요리의 전문가야."),
-    
-    
-#     ("system", "질문에 답변할 때는 항상 데이터를 세밀히 학습하고 정확한 답변을 생성해야 해."),
-#     ("system", "만약 데이터 안에 유저의 질문이 없다면, 양해를 구하고 관련 데이터를 제공할 수 없음을 알리도록 해."),
-#     ("system", "질문에 계산이 필요한 경우, 데이터를 기반으로 정확하게 계산하여 결과를 제공해야 합니다."),
-#     ("system", "질문에 대한 답변을 생성 하기전에 검증을 마친 후에 생성해줘."),
-#     ("system", "부족한 부분이 있다고 생각하면, 다른 데이터를 참조해줘"),
-
-    
-#     ("system", "다음은 답변 형식의 예시야: \n"
-#                "user: 미역국을 만들고 싶어.\n"
-#                "ai: 미역국의 재료는 ~입니다.\n"
-#                "ai: 미역국을 만드는 순서는 다음과 같습니다:\n"
-#                "ai: 첫 번째 ~~~, 두 번째 ~~~입니다.\n"),
-    
-    
-#     ("system", "또 다른 예시를 들어줄게:\n"
-#                "user: 내가 만들려고 하는 미역국의 칼로리는 얼마야?\n"
-#                "ai: 미역국의 칼로리는 1인분당 ~kcal입니다. 이 레시피는 ~인분 기준이므로, 총 칼로리는 ~kcal입니다.\n"),
-    
-    
-#     ("system", "추가 예시:\n"
-#                "user: 5인분의 레시피로 수정해줘.\n"
-#                "ai: 현재 미역국 레시피는 ~인분 기준입니다. 5인분으로 수정된 재료는 다음과 같습니다:\n"
-#                "ai: ~~~.\n"
-#                "이때도 순서를 전부 알려줘"),
-    
-    
-#     ("system", "추가 예시:\n"
-#                "user: 된장찌개 끓이는법을 알려줘.\n"
-#                "ai: 된장찌개는 재료에 따라 나뉩니다. 현재 ~ 한 된장찌개 레시피가 있습니다 어떤 된장찌개 레시피를원하십니까?:\n"
-#                ),
-    
-    
-#     ("user", "다음과 같은 데이터를 학습해:\n{data}"),
-#     ("user", "그리고 질문에 답해:\n{question}")
-# ])
 
 # # 위치 설정
-path = "Prompts/"
+def load_prompts(path, system_files):
+    system_message = []
+    for txt in system_files:
+        try:
+            with open(os.path.join(path, txt), "r", encoding="UTF-8") as f:
+                content = f.read().replace("\\n", "\n")
+                system_message.append(("system", content))
+        except FileNotFoundError:
+            print(f"Warning: Prompt file '{txt}' not found.")
+        except Exception as e:
+            print(f"Error loading prompt '{txt}': {e}")
+    
+    system_message.append(("user", "data : {data}\\n\\nQuestion: {question}"))
 
+    return system_message
 
-system_files = ["Require_decide.txt","Food_recipe.txt","Food_recommend.txt"]
-
-
-system_message = []
-for txt in system_files :
-    with open(os.path.join(path, txt),"r", encoding="UTF-8") as f:
-       
-        content = f.read().replace("\\n", "\n")
-        system_message.append(("system", content))
-
-
-system_message.append(("user", "data : {data}\\n\\nQuestion: {question}"))
-
-
+# 호출
+system_message = load_prompts("Prompts/", ["Require_decide.txt", "Food_recipe.txt", "Food_recommend.txt"])
 prompt = ChatPromptTemplate.from_messages(system_message)
+
 
 
 

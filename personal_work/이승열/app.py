@@ -63,7 +63,7 @@ st.text_input(
 # 히스토리 자동 저장 기능
 def auto_save_history():
     if "chat_history" in st.session_state and st.session_state.chat_history:
-        save_path = "chat_history.json"
+        save_path = "log/chat_history.json"
         try:
             save_to_json(save_path, st.session_state.chat_history)
             print(f"히스토리가 자동 저장되었습니다: {os.path.abspath(save_path)}")
