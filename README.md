@@ -35,11 +35,13 @@
 | 팀장  | 팀원 | 팀원 | 팀원 |
 | [@K-MarkLee](https://github.com/K-MarkLee) | [@Dawol2205](https://github.com/Dawol2205) | [@nyum76](https://github.com/nyum76) |  |
 
-#### [저녁에정하기 팀노션 바로가기] (https://www.notion.so/1382dc3ef51480cdac89ec9f05922119?pvs=21)
+#### [저녁에정하기 팀노션 바로가기](https://www.notion.so/1382dc3ef51480cdac89ec9f05922119?pvs=21)
+  
 
-#### [SA Document 바로가기] (https://www.notion.so/SA-Document-1432dc3ef51480b297cdea1f5da815e8?pvs=21)
-
-#### [JIRA 바로가기] (https://ai-group-12.atlassian.net/jira/software/projects/AI/boards/2/timeline?selectedIssue=AI-8)
+#### [SA Document 바로가기](https://www.notion.so/SA-Document-1432dc3ef51480b297cdea1f5da815e8?pvs=21)
+  
+  
+#### [JIRA 바로가기](https://ai-group-12.atlassian.net/jira/software/projects/AI/boards/2/timeline?selectedIssue=AI-8)
 
 
 
