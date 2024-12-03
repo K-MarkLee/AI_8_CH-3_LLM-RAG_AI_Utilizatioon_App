@@ -1,8 +1,10 @@
 import streamlit as st
 import logging
-import pickle
-import json
 import os
+import json
+import time
+import io
+
 from datetime import datetime
 from gtts import gTTS
 import base64
@@ -10,22 +12,173 @@ import tempfile
 import requests
 from urllib.parse import urljoin
 
-from langchain_openai import ChatOpenAI
-from langchain.chains.conversational_retrieval.base import ConversationalRetrievalChain
-from langchain.memory import ConversationBufferMemory
+from gtts import gTTS
+import streamlit.components.v1 as components
+import base64
+from collections import deque
+from dotenv import load_dotenv
+from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_community.vectorstores import FAISS
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain.docstore.document import Document
-from langchain.prompts import PromptTemplate
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.runnables import RunnablePassthrough
+
+
+# 환경 변수 설정
+load_dotenv()
+api_key = os.getenv("OPENAI_API_KEY")
+
+if not api_key:
+    raise EnvironmentError("Error: OpenAI_API_KEY is not set. Please configure it in your environment.")
+os.environ["OpenAI_API_KEY"] = api_key
 
 # 로깅 설정
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# 벡터 저장소 경로
-VECTOR_PATH = "vectorstore"
 
+<<<<<<< HEAD
+
+db_path = "./food_db/"
+# 기본 설정
+model = ChatOpenAI(model="gpt-4o-mini")
+embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
+recipes_store = FAISS.load_local(db_path, embeddings, allow_dangerous_deserialization=True)
+retriever = recipes_store.as_retriever(search_type="similarity", search_kwargs={"k": 5})
+
+
+# 프롬프트 로드 함수
+def load_prompts(path, system_files):
+    system_message = []
+    for txt in system_files:
+        try:
+            with open(os.path.join(path, txt), "r", encoding="UTF-8") as f:
+                content = f.read().replace("\\n", "\n")
+                system_message.append(("system", content))
+                
+        except FileNotFoundError:
+            logger.error(f"프롬프트 파일 '{txt}'이 존재하지 않습니다.")
+            st.error(f"프롬프트 파일 '{txt}'을 찾을 수 없습니다.")
+            st.stop()
+            
+        except Exception as e:
+            logger.error(f"프롬프트 파일 '{txt}' 읽기 실패: {e}")
+            st.error(f"프롬프트 파일 '{txt}' 읽는 중 오류 발생: {e}")
+            st.stop()
+            
+    system_message.append(("user", "data : {data}\\n\\nQuestion: {question}"))
+    return system_message
+
+
+# 프롬프트 경로
+prompt_path = "./Prompts/"
+system_message = load_prompts(prompt_path, ["Require_decide.txt", "Food_recipe.txt", "Food_recommend.txt"])
+prompt = ChatPromptTemplate.from_messages(system_message)
+
+
+
+
+# JSON 파일 설정
+json_path = "./log/"
+json_file = None  # 전역 변수로 초기화
+
+
+# JSON 파일 생성 함수
+def create_json_file(base_dir=json_path, prefix="output_log"):
+    global json_file  # 전역 변수 사용
+    if json_file is None:  # 파일이 없을 때만 생성
+        if not os.path.exists(base_dir):
+            os.makedirs(base_dir)
+        timestamp = time.strftime("%Y%m%d_%H")
+        json_file = os.path.join(base_dir, f"{prefix}_{timestamp}.json")
+    return json_file
+
+
+
+# JSON 파일에 기록 저장
+# JSON 파일 저장 함수
+def append_to_json(user_input, assistant_response):
+    """
+    유저 입력과 모델 응답을 JSON 파일에 추가합니다.
+    """
+    file_path = create_json_file()  # 항상 동일한 파일을 참조
+    try:
+        # 기존 JSON 데이터 로드
+        if os.path.exists(file_path):
+            with open(file_path, "r", encoding="utf-8") as f:
+                existing_data = json.load(f)
+        else:
+            existing_data = []
+        
+        # 새로운 데이터를 기존 데이터에 추가
+        new_record = {
+            "user_input": user_input,
+            "assistant_response": assistant_response
+        }
+        existing_data.append(new_record)
+
+        # 데이터를 JSON 파일에 기록
+        with open(file_path, "w", encoding="utf-8") as f:
+            json.dump(existing_data, f, ensure_ascii=False, indent=4)
+    except Exception as e:
+        logger.error(f"JSON 저장 실패: {e}")
+        
+        
+        
+# TTS 음성 재생 함수
+def play_audio(text):
+    """
+    gTTS를 이용해 음성을 생성하고 Streamlit에서 바로 재생.
+    """
+    tts = gTTS(text=text, lang="ko")
+    # 음성 파일을 메모리에 저장
+    audio_buffer = io.BytesIO()
+    tts.write_to_fp(audio_buffer)
+    audio_buffer.seek(0)
+    
+    # base64로 인코딩하여 Streamlit에서 재생 가능하도록 설정
+    audio_base64 = base64.b64encode(audio_buffer.read()).decode()
+    audio_html = f"""
+        <audio autoplay controls>
+            <source src="data:audio/mpeg;base64,{audio_base64}" type="audio/mpeg">
+        </audio>
+    """
+    components.html(audio_html, height=80)  # 오디오 플레이어 삽입
+        
+        
+
+# Debug PassThrough 설정
+class DebugPassThrough(RunnablePassthrough):
+    def invoke(self, *args, **kwargs):
+        output = super().invoke(*args, **kwargs)
+        return output
+
+# ContextToText: 데이터 유실 방지
+class ContextToText(RunnablePassthrough):
+    def invoke(self, inputs, config=None, **kwargs):
+        # inputs["data"] = inputs["data"][-3:]  # 마지막 3개의 데이터만 포함
+
+        # 데이터를 그대로 전달
+        return {"data": inputs["data"], "question": inputs["question"]}
+
+
+# 랭체인 연결
+rag_chain_divide = {
+    "data": retriever,
+    "question": DebugPassThrough(),
+} | DebugPassThrough() | ContextToText() | prompt | model
+
+        
+        
+
+# Streamlit UI 구성
+def initialize_session_state():
+    """세션 상태 초기화"""
+    if "chat_history" not in st.session_state:
+        st.session_state.chat_history = deque(maxlen=3)
+    if "response" not in st.session_state:
+        st.session_state.response = ""
+
+=======
 def autoplay_audio(audio_content, autoplay=True):
     """음성 재생을 위한 HTML 컴포넌트 생성"""
     b64 = base64.b64encode(audio_content).decode()
@@ -136,11 +289,11 @@ def initialize_session_state():
 """
     if "voice_enabled" not in st.session_state:
         st.session_state.voice_enabled = True
+>>>>>>> e1873d44ad42954c5a41b0a685ba2b4de61b82e6
 
-def validate_api_key(api_key):
-    """OpenAI API 키 형식 검증"""
-    return api_key and len(api_key) > 20
 
+<<<<<<< HEAD
+=======
 def get_text_chunks(documents):
     """텍스트를 청크로 분할"""
     text_splitter = RecursiveCharacterTextSplitter(
@@ -210,26 +363,27 @@ def get_conversation_chain(vectorstore, openai_api_key, custom_prompt):
     )
 
     return conversation_chain
+>>>>>>> e1873d44ad42954c5a41b0a685ba2b4de61b82e6
 
 def main():
     try:
-        # 페이지 설정
-        st.set_page_config(
-            page_title="요리 도우미",
-            page_icon="🍳",
-            layout="wide",
-            initial_sidebar_state="expanded"
-        )
+        st.set_page_config(page_title="요리 전문가 챗봇", page_icon="🍳", layout="wide")
+        st.title("요리 전문가 챗봇")
+        st.write("질문을 입력하면 요리 관련 정보를 제공합니다.")
 
         # 세션 상태 초기화
         initialize_session_state()
-
-        st.title("요리 도우미 🍳")
-
-        # 사이드바 설정
+        create_json_file()
+        
+        
+        # 사이드바 구성
         with st.sidebar:
             st.header("설정")
             
+<<<<<<< HEAD
+            # TTS on/off 설정
+            tts_enabled = st.checkbox("TTS (텍스트 음성 변환)", value=False)
+=======
             # 음성 출력 토글
             st.session_state.voice_enabled = st.toggle("음성 출력 활성화", value=st.session_state.voice_enabled)
             
@@ -237,13 +391,26 @@ def main():
             openai_api_key = st.text_input("OpenAI API Key", type="password")
             if not openai_api_key:
                 st.info("OpenAI API 키를 입력해주세요.", icon="🔑")
+>>>>>>> e1873d44ad42954c5a41b0a685ba2b4de61b82e6
 
-            # 프롬프트 템플릿 설정
-            st.header("프롬프트 템플릿")
-            custom_prompt = st.text_area("RAG 프롬프트", value=st.session_state.custom_prompt)
-            if custom_prompt != st.session_state.custom_prompt:
-                st.session_state.custom_prompt = custom_prompt
+            # 초기화 버튼
+            if st.button("대화 기록 초기화", key="reset_button"):
+                st.session_state.chat_history.clear()  # chat_history 초기화
+                st.success("대화 기록이 초기화되었습니다.")  # 메시지 출력
 
+<<<<<<< HEAD
+        
+
+        # 사용자 입력 처리
+        if query := st.chat_input("질문을 입력하세요"):
+            # 사용자 질문 저장
+            user_input = {"role": "user", "content": query}
+            st.session_state.chat_history.append(user_input)
+
+            with st.chat_message("user"):
+                st.write(query)
+
+=======
             # GitHub 파일 처리 섹션
             st.header("GitHub 파일 처리")
             if st.button("GitHub에서 파일 가져오기"):
@@ -387,13 +554,25 @@ def main():
                 
                 st.stop()
 
+>>>>>>> e1873d44ad42954c5a41b0a685ba2b4de61b82e6
             with st.chat_message("assistant"):
                 with st.spinner("답변을 생성하는 중..."):
                     try:
-                        result = st.session_state.conversation({"question": query})
-                        response = result['answer']
-                        source_documents = result.get('source_documents', [])
+                        # 모델 호출 및 응답 처리
+                        model_input = "\n".join([f"{msg['role']}: {msg['content']}" for msg in st.session_state.chat_history])
+                        response = rag_chain_divide.invoke(model_input)
+                        assistant_response = {"role": "assistant", "content": response.content}
+                        st.session_state.chat_history.append(assistant_response)
 
+<<<<<<< HEAD
+                        # JSON에 기록
+                        append_to_json(query, response.content)
+                        
+                        st.write(response.content)
+                        
+                        if tts_enabled:
+                            play_audio(response.content)
+=======
                         st.write(response)
 
                         # 음성 출력 처리
@@ -415,10 +594,17 @@ def main():
                             "content": response,
                             "audio": audio_bytes
                         })
+>>>>>>> e1873d44ad42954c5a41b0a685ba2b4de61b82e6
 
                     except Exception as e:
-                        error_message = f"답변 생성 중 오류가 발생했습니다: {str(e)}"
+                        error_message = f"응답 생성 중 오류 발생: {e}"
+                        error_data = {"role": "assistant", "content": error_message}
+                        st.session_state.chat_history.append(error_data)
+                        append_to_json(error_data)
                         st.error(error_message)
+<<<<<<< HEAD
+
+=======
                         
                         if st.session_state.voice_enabled:
                             audio_bytes = text_to_speech(error_message)
@@ -435,10 +621,12 @@ def main():
                             autoplay_audio(audio_bytes)
                             
                         logger.error(f"응답 생성 오류: {e}")
+>>>>>>> e1873d44ad42954c5a41b0a685ba2b4de61b82e6
 
     except Exception as e:
         logger.error(f"앱 실행 중 오류 발생: {e}")
-        st.error("앱 실행 중 오류가 발생했습니다. 새로고침을 시도해주세요.")
+        st.error(f"앱 실행 중 오류 발생: {e}")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()
