@@ -3,6 +3,12 @@ import logging
 import os
 import json
 import time
+import io
+
+from gtts import gTTS
+import streamlit.components.v1 as components
+import base64
+from collections import deque
 from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_community.vectorstores import FAISS
@@ -103,10 +109,32 @@ def append_to_json(user_input, assistant_response):
         existing_data.append(new_record)
 
         # 데이터를 JSON 파일에 기록
-        with open(file_path, "a", encoding="utf-8") as f:
+        with open(file_path, "w", encoding="utf-8") as f:
             json.dump(existing_data, f, ensure_ascii=False, indent=4)
     except Exception as e:
         logger.error(f"JSON 저장 실패: {e}")
+        
+        
+        
+# TTS 음성 재생 함수
+def play_audio(text):
+    """
+    gTTS를 이용해 음성을 생성하고 Streamlit에서 바로 재생.
+    """
+    tts = gTTS(text=text, lang="ko")
+    # 음성 파일을 메모리에 저장
+    audio_buffer = io.BytesIO()
+    tts.write_to_fp(audio_buffer)
+    audio_buffer.seek(0)
+    
+    # base64로 인코딩하여 Streamlit에서 재생 가능하도록 설정
+    audio_base64 = base64.b64encode(audio_buffer.read()).decode()
+    audio_html = f"""
+        <audio autoplay controls>
+            <source src="data:audio/mpeg;base64,{audio_base64}" type="audio/mpeg">
+        </audio>
+    """
+    components.html(audio_html, height=80)  # 오디오 플레이어 삽입
         
         
 
@@ -138,7 +166,7 @@ rag_chain_divide = {
 def initialize_session_state():
     """세션 상태 초기화"""
     if "chat_history" not in st.session_state:
-        st.session_state.chat_history = []
+        st.session_state.chat_history = deque(maxlen=3)
     if "response" not in st.session_state:
         st.session_state.response = ""
 
@@ -153,6 +181,21 @@ def main():
         # 세션 상태 초기화
         initialize_session_state()
         create_json_file()
+        
+        
+        # 사이드바 구성
+        with st.sidebar:
+            st.header("설정")
+            
+            # TTS on/off 설정
+            tts_enabled = st.checkbox("TTS (텍스트 음성 변환)", value=False)
+
+            # 초기화 버튼
+            if st.button("대화 기록 초기화", key="reset_button"):
+                st.session_state.chat_history.clear()  # chat_history 초기화
+                st.success("대화 기록이 초기화되었습니다.")  # 메시지 출력
+
+        
 
         # 사용자 입력 처리
         if query := st.chat_input("질문을 입력하세요"):
@@ -176,6 +219,9 @@ def main():
                         append_to_json(query, response.content)
                         
                         st.write(response.content)
+                        
+                        if tts_enabled:
+                            play_audio(response.content)
 
                     except Exception as e:
                         error_message = f"응답 생성 중 오류 발생: {e}"
