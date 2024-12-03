@@ -3,6 +3,7 @@ import os
 import faiss
 import json
 import time
+from dotenv import load_dotenv
 
 from langchain_openai import ChatOpenAI
 from langchain_openai import OpenAIEmbeddings
@@ -18,8 +19,10 @@ from collections import deque
 
 ######################################################################
 
+load_dotenv()
+
 # 환경 변수 설정
-api_key = os.getenv("GPT_API")
+api_key = os.getenv("OPENAI_API_KEY")
 
 if not api_key:
     raise EnvironmentError("Error: OpenAI_API_KEY is not set. Please configure it in your environment.")
@@ -42,7 +45,7 @@ embeddings = OpenAIEmbeddings(model = "text-embedding-3-small")
 ######################################################################
 
 # 백터 데이터 베이스 불러오기
-recipes = FAISS.load_local("food_db/" ,embeddings, allow_dangerous_deserialization=True)
+recipes = FAISS.load_local("food_db_team/" ,embeddings, allow_dangerous_deserialization=True)
 
 
 
@@ -82,7 +85,7 @@ prompt = ChatPromptTemplate.from_messages(system_message)
 
 
 
-
+print(prompt)
 
 #####################################################################
 
@@ -95,8 +98,11 @@ class DebugPassThrough(RunnablePassthrough):
     
 class ContextToText(RunnablePassthrough):
     def invoke(self, inputs, config = None, **kwargs):
+        
+        #마지막 데이터를 넣음으로 업데이트
+        inputs["data"] = inputs["data"][-3:]
         return {"data": inputs["data"], "question": inputs["question"]}
-       
+    
 
     
 # 랭체인 연결
@@ -131,7 +137,14 @@ def save_to_json(file_path, data):
 
 # streamlit의 사용을 위한 호출
 def get_response(user_input):
-    return rag_chain_divide.invoke(user_input)
+    # 히스토리에 사용자 입력 추가
+    chat_history.append({"role": "user", "content" : user_input})
+    
+    
+    #모델의 입력 구성
+    model_input = "\n".join([f"{msg['role']}: {msg['content']}" for msg in chat_history])
+    
+    return rag_chain_divide.invoke(model_input)
 
 
 #####################################################################
@@ -144,42 +157,44 @@ log = []
 output_file = create_json_file()
 
 
-# while True:
-#     print("-----------------------------")
+while True:
+    print("-----------------------------")
     
     
-#     query = input("질문을 입력해 주세요 (break 입력시 종료됩니다) : ")
+    query = input("질문을 입력해 주세요 (break 입력시 종료됩니다) : ")
     
     
-#     if query.lower() == "break":
-#         save_to_json(output_file,log)
-#         break
+    if query.lower() == "break":
+        save_to_json(output_file,log)
+        break
     
     
-#     # 히스토리에 사용자 입력 추가
-#     chat_history.append({"role": "user", "content" : query})
+    # 히스토리에 사용자 입력 추가
+    chat_history.append({"role": "user", "content" : query})
     
     
-#     #모델의 입력 구성
-#     model_input = "\n".join([f"{msg['role']}: {msg['content']}" for msg in chat_history])
+    #모델의 입력 구성
+    model_input = "\n".join([f"{msg['role']}: {msg['content']}" for msg in chat_history])
+    print(model_input)
 
 
-#     #응답 생성
-#     response = rag_chain_divide.invoke(model_input)
+    #응답 생성
+    response = rag_chain_divide.invoke(model_input)
     
     
-#     # 히스토리에 모델의 응답 추가
-#     chat_history.append({"role": "assistant", "content": response.content})
+    # 히스토리에 모델의 응답 추가
+    chat_history.append({"role": "assistant", "content": response.content})
     
     
-#     #저장
-#     record = {
-#         "질문" : query,
-#         "답변" : response.content,
-#         "기록" : list(chat_history)
-#     }
-#     log.append(record)
+    #저장
+    record = {
+        "질문" : query,
+        "답변" : response.content,
+        "기록" : list(chat_history)
+    }
+    log.append(record)
     
 
-#     print("Question : ", query)
-#     print(response.content)
+    print("Question : ", query)
+    print(response.content)
+    
