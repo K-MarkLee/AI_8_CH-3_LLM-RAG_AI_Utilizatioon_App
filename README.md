@@ -43,14 +43,14 @@
 ----
   
   
-## ** 프로젝트 계기(YS)**
+## **프로젝트 계기(YS)**
 
 최근 화제 였던 흑백요리사의 끝물을 이어 받아 고물가 시대에 도래한 지금..조금이라도 엄마도 알려주지 않는 요리법을 누구나 할 수 있는 컨셉으로 기획 하게 되었습니다. 누구나 계란후라이 정도는 할 수 있지만 계란후라이에서 끝나는 사람도 있고 라면을 끓여도 한강 라면을 만드는 사람이 있습니다. 그런 분들 특징이 레시피에서 알려주는 한국식 계량법에 문제가 있다고 판단하여 정확한 계량을 알려주는 chatbot형태의 AI를 제작 하였습니다.
 
 ---
   
   
-## ** 💜 주요기능**
+## **💜 주요기능**
 
 - 기능 1
     - 유저의 인풋을 받아서 기능 A / B 분할하기
@@ -96,7 +96,7 @@
   
   
     
-## ** 📚️ 기술스택**
+## **📚️ 기술스택**
 <div align=center> 
   <img src=https://img.shields.io/badge/ChatGPT-74aa9c?style=for-the-badge&logo=openai&logoColor=white>
   <img src=https://img.shields.io/badge/json-5E5C5C?style=for-the-badge&logo=json&logoColor=white>
@@ -167,7 +167,7 @@
 └─Prompts
 ```
 
-##Trouble Shooting
+## Trouble Shooting
 1. 에러 1번
     1. 데이터 크롤링 과정에서 find all next 로 설정하니 그 이후의 모든 텍스트를 가져옴
     2. 해결 > for 문안에 find all next 를 넣고 조건에 맞는다면 break를 설정.
