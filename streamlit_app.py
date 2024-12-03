@@ -52,7 +52,7 @@ json_path = "./log/" # json파일 위치 (로그 저장용)
 
 
 # 기본 설정
-model = ChatOpenAI(model="gpt-4o-mini") # 모델 불러오기
+model = ChatOpenAI(model="gpt-4o") # 모델 불러오기
 embeddings = OpenAIEmbeddings(model="text-embedding-3-small") # 임베딩 불러오기
 recipes_store = FAISS.load_local(db_path, embeddings, allow_dangerous_deserialization=True) # 백터 db불러오기
 retriever = recipes_store.as_retriever(search_type="similarity", search_kwargs={"k": 5}) # 리트리버 설정하기
@@ -210,7 +210,7 @@ rag_chain_divide = {
 def initialize_session_state():
     """세션 상태 초기화"""
     if "chat_history" not in st.session_state:
-        st.session_state.chat_history = deque(maxlen=3)
+        st.session_state.chat_history = deque(maxlen=5)
     if "response" not in st.session_state:
         st.session_state.response = ""
 
