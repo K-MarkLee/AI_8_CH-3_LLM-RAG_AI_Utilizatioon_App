@@ -23,10 +23,6 @@ from langchain_core.runnables import RunnablePassthrough # 데이터를 그대�
 ##############################################################
 
 # 환경 변수 설정
-"""
-기본세팅을 위한 환경 변수의 설정.
-api키 검증 후 로깅을 설정.
-"""
 load_dotenv() # .env 로드
 
 api_key = os.getenv("OPENAI_API_KEY") # api 호출

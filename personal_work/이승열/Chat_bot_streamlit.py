@@ -15,6 +15,7 @@ from langchain_community.vectorstores import FAISS
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 
+
 # 환경 변수 설정
 load_dotenv()
 api_key = os.getenv("OPENAI_API_KEY")
@@ -26,7 +27,6 @@ os.environ["OpenAI_API_KEY"] = api_key
 # 로깅 설정
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
 
 
 
@@ -172,6 +172,7 @@ def initialize_session_state():
 
 
 
+
 def main():
     try:
         st.set_page_config(page_title="요리 전문가 챗봇", page_icon="🍳", layout="wide")
@@ -230,9 +231,11 @@ def main():
                         append_to_json(error_data)
                         st.error(error_message)
 
+
     except Exception as e:
         logger.error(f"앱 실행 중 오류 발생: {e}")
         st.error(f"앱 실행 중 오류 발생: {e}")
+
 
 if __name__ == "__main__":
     main()
