@@ -32,8 +32,10 @@ def initialize_session_state():
         st.session_state.messages = [
             {"role": "assistant", "content": "안녕하세요! 요리 도우미입니다. 어떤 요리에 대해 알고 싶으신가요?"}
         ]
+        
     if "vectorstore" not in st.session_state:
         st.session_state.vectorstore = None
+        
     if "custom_prompt" not in st.session_state:
         st.session_state.custom_prompt = """
 아래 정보를 기반으로 사용자의 질문에 답변해주세요:

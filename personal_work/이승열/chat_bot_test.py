@@ -29,7 +29,7 @@ if not api_key:
 os.environ["OpenAI_API_KEY"] = api_key
 
 
-model = ChatOpenAI(model ="gpt-4o-mini")
+model = ChatOpenAI(model ="gpt-4o")
 
 
 
@@ -45,7 +45,7 @@ embeddings = OpenAIEmbeddings(model = "text-embedding-3-small")
 ######################################################################
 
 # 백터 데이터 베이스 불러오기
-recipes = FAISS.load_local("food_db/" ,embeddings, allow_dangerous_deserialization=True)
+recipes = FAISS.load_local("food_db_team/" ,embeddings, allow_dangerous_deserialization=True)
 
 
 
@@ -85,7 +85,7 @@ prompt = ChatPromptTemplate.from_messages(system_message)
 
 
 
-
+print(prompt)
 
 #####################################################################
 
@@ -157,44 +157,44 @@ log = []
 output_file = create_json_file()
 
 
-# while True:
-#     print("-----------------------------")
+while True:
+    print("-----------------------------")
     
     
-#     query = input("질문을 입력해 주세요 (break 입력시 종료됩니다) : ")
+    query = input("질문을 입력해 주세요 (break 입력시 종료됩니다) : ")
     
     
-#     if query.lower() == "break":
-#         save_to_json(output_file,log)
-#         break
+    if query.lower() == "break":
+        save_to_json(output_file,log)
+        break
     
     
-#     # 히스토리에 사용자 입력 추가
-#     chat_history.append({"role": "user", "content" : query})
+    # 히스토리에 사용자 입력 추가
+    chat_history.append({"role": "user", "content" : query})
     
     
-#     #모델의 입력 구성
-#     model_input = "\n".join([f"{msg['role']}: {msg['content']}" for msg in chat_history])
-#     print(model_input)
+    #모델의 입력 구성
+    model_input = "\n".join([f"{msg['role']}: {msg['content']}" for msg in chat_history])
+    print(model_input)
 
 
-#     #응답 생성
-#     response = rag_chain_divide.invoke(model_input)
+    #응답 생성
+    response = rag_chain_divide.invoke(model_input)
     
     
-#     # 히스토리에 모델의 응답 추가
-#     chat_history.append({"role": "assistant", "content": response.content})
+    # 히스토리에 모델의 응답 추가
+    chat_history.append({"role": "assistant", "content": response.content})
     
     
-#     #저장
-#     record = {
-#         "질문" : query,
-#         "답변" : response.content,
-#         "기록" : list(chat_history)
-#     }
-#     log.append(record)
+    #저장
+    record = {
+        "질문" : query,
+        "답변" : response.content,
+        "기록" : list(chat_history)
+    }
+    log.append(record)
     
 
-#     print("Question : ", query)
-#     print(response.content)
+    print("Question : ", query)
+    print(response.content)
     
