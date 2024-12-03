@@ -1,6 +1,6 @@
-# 프로젝트 이름
+#프로젝트 이름
 
-## 📖 목차
+##📖 목차
 - [프로젝트 이름](#프로젝트-이름)
   - [📖 목차](#-목차)
   - [👨‍🏫 프로젝트 소개](#-프로젝트-소개)
@@ -18,7 +18,7 @@
   - [프로젝트 파일 구조](#프로젝트-파일-구조)
   - [Trouble Shooting](#trouble-shooting)
     
-**## 👨‍🏫 프로젝트 소개**
+**##👨‍🏫 프로젝트 소개**
 
 ![image.png](image/7.png)
 
@@ -28,29 +28,29 @@
 
 재료! 무게! 조리법! 조리시간! 심지어 칼로리까지?! 챙겨드리는 **요리도움이!!**
 
-**## 팀소개**
+**##팀소개**
 
 | 이승열 | 정용선 | 차아인 | 고준원 |
 | --- | --- | --- | --- |
 | 팀장  | 팀원 | 팀원 | 팀원 |
 | [@K-MarkLee](https://github.com/K-MarkLee) | [@Dawol2205](https://github.com/Dawol2205) | [@nyum76](https://github.com/nyum76) |  |
 
-#### [저녁에정하기 팀노션 바로가기]([https://www.notion.so/teamsparta/1382dc3ef51480cdac89ec9f05922119](https://www.notion.so/1382dc3ef51480cdac89ec9f05922119?pvs=21))
+####[저녁에정하기 팀노션 바로가기]([https://www.notion.so/teamsparta/1382dc3ef51480cdac89ec9f05922119](https://www.notion.so/1382dc3ef51480cdac89ec9f05922119?pvs=21))
 
-#### [SA Document 바로가기]([https://www.notion.so/teamsparta/SA-Document-1432dc3ef51480b297cdea1f5da815e8](https://www.notion.so/SA-Document-1432dc3ef51480b297cdea1f5da815e8?pvs=21))
+####[SA Document 바로가기]([https://www.notion.so/teamsparta/SA-Document-1432dc3ef51480b297cdea1f5da815e8](https://www.notion.so/SA-Document-1432dc3ef51480b297cdea1f5da815e8?pvs=21))
 
 
 ----
   
   
-**## 프로젝트 계기(YS)**
+**##프로젝트 계기(YS)**
 
 최근 화제 였던 흑백요리사의 끝물을 이어 받아 고물가 시대에 도래한 지금..조금이라도 엄마도 알려주지 않는 요리법을 누구나 할 수 있는 컨셉으로 기획 하게 되었습니다. 누구나 계란후라이 정도는 할 수 있지만 계란후라이에서 끝나는 사람도 있고 라면을 끓여도 한강 라면을 만드는 사람이 있습니다. 그런 분들 특징이 레시피에서 알려주는 한국식 계량법에 문제가 있다고 판단하여 정확한 계량을 알려주는 chatbot형태의 AI를 제작 하였습니다.
 
 ---
   
   
-**## 💜 주요기능**
+**##💜 주요기능**
 
 - 기능 1
     - 유저의 인풋을 받아서 기능 A / B 분할하기
@@ -93,10 +93,10 @@
 ---
   
     
-**## 📚️ 기술스택**
+**##📚️ 기술스택**
   
   
-## 📚️ 기술스택
+##📚️ 기술스택
 <div align=center> 
   <img src=https://img.shields.io/badge/ChatGPT-74aa9c?style=for-the-badge&logo=openai&logoColor=white>
   <img src=https://img.shields.io/badge/json-5E5C5C?style=for-the-badge&logo=json&logoColor=white>
@@ -107,7 +107,7 @@
   <br>
 </div>
   
-### ✔️ 협업 툴
+###✔️ 협업 툴
 <div align=center>   
   <img src=https://img.shields.io/badge/Slack-4A154B?style=for-the-badge&logo=slack&logoColor=white>
   <img src=https://img.shields.io/badge/Jira-0052CC?style=for-the-badge&logo=Jira&logoColor=white>
@@ -115,27 +115,27 @@
   <img src=https://img.shields.io/badge/Canva-%2300C4CC.svg?&style=for-the-badge&logo=Canva&logoColor=white>
 </div>
   
-### ✔️ Language
+###✔️ Language
 <div align=center>
   <img src="https://img.shields.io/badge/python-3776AB?style=for-the-badge&logo=python&logoColor=white"> 
 </div>
   
-### ✔️ Version Control
+###✔️ Version Control
 <div align=center> 
   <img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white">
 </div>
   
-### ✔️ IDE
+###✔️ IDE
 <div align=center> 
   <img src=https://img.shields.io/badge/Visual_Studio_Code-0078D4?style=for-the-badge&logo=visual%20studio%20code&logoColor=white>
 </div>
   
-### ✔️ Framework
+###✔️ Framework
 <div align=center> 
   <img src=https://img.shields.io/badge/langchain-1C3C3C?style=for-the-badge&logo=langchain&logoColor=white>
 </div>
   
-### ✔️ Deploy
+###✔️ Deploy
 <div align=center> 
   <img src=https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=Streamlit&logoColor=white>
 </div>
@@ -144,10 +144,10 @@
 
 
 
-## 와이어프레임
+##와이어프레임
 ![img.png](image/8.png)
 
-
+```
 ## 프로젝트 파일 구조
 ├─.devcontainer
 ├─.github
@@ -165,9 +165,9 @@
 │  ├─정용선
 │  └─차아인
 └─Prompts
+```
 
-
-## Trouble Shooting
+##Trouble Shooting
 1. 에러 1번
     1. 데이터 크롤링 과정에서 find all next 로 설정하니 그 이후의 모든 텍스트를 가져옴
     2. 해결 > for 문안에 find all next 를 넣고 조건에 맞는다면 break를 설정.
