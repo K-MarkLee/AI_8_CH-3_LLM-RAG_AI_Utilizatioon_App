@@ -12,4 +12,3 @@ numpy
 torch
 transformers
 openai
-gTTS
