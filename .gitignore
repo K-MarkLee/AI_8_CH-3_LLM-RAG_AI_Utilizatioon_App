@@ -166,3 +166,4 @@ cython_debug/
 
 # 크롤링 데이터 폴더 무시
 food_recipe/
+food_recopes/
