@@ -147,8 +147,9 @@
 ## 와이어프레임
 ![img.png](image/8.png)
 
-```
+
 ## 프로젝트 파일 구조
+```
 ├─.devcontainer
 ├─.github
 ├─food_db
